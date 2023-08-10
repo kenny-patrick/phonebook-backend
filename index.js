@@ -1,7 +1,15 @@
 const express = require('express')
+const morgan = require('morgan')
+
 const app = express()
 
 app.use(express.json())
+
+morgan.token('body', (req, res) => {
+  return JSON.stringify(req.body)
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
   { 
@@ -59,7 +67,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 const generateId = () => (Math.floor(Math.random() * 999999))
-const isNameDuplicate = (name) => (persons.filter(p => p.name === name))
+const isNameDuplicate = (name) => (persons.filter(p => p.name === name).length > 0)
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
